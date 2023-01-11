@@ -80,8 +80,8 @@ def calculate_path(source: Coordinate, targets: List[Coordinate], enemies: List[
 
 def combine_graph(radar_graph: nx.Graph(), all_graph: nx.Graph()) -> nx.Graph():
     """combines radar graph to regular graph"""
-    R = nx.compose(radar_graph, all_graph)
-    return R
+    new_graph = nx.compose(radar_graph, all_graph)
+    return new_graph
 
 
 
