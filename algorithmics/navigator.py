@@ -1,14 +1,17 @@
 from typing import List, Tuple
-
 import networkx as nx
 import matplotlib.pyplot as plt
-
+from algorithmics.utils.coordinate import Coordinate
 from algorithmics.enemy.asteroids_zone import AsteroidsZone
 from algorithmics.enemy.black_hole import BlackHole
 from algorithmics.enemy.enemy import Enemy
 from algorithmics.enemy.radar import Radar
 from algorithmics.helper import does_line_slice
 from algorithmics.utils.coordinate import Coordinate
+import dwave_networkx as dnx
+from dwave_networkx.utils import binary_quadratic_model_sampler
+import collections
+from collections import deque
 
 
 def get_weight(point1: Coordinate, point2):
@@ -60,6 +63,72 @@ def create_paths_graph(source: Coordinate, targets: List[Coordinate], enemies: L
     return result_graph
 
 
+def find_source_in_path(path: List[Coordinate], source: Coordinate):
+    for i in range(len(path)):
+        if path[i] == source:
+            return i
+
+
+def get_neighbor_from_the_right(path, targets):
+    for i in range(1, len(path)):
+        if path[i] in targets:
+            return i
+
+
+def get_neighbor_from_the_left(path, targets):
+    for i in range(len(path) - 1, 0, -1):
+        if path[i] in targets:
+            return i
+
+
+def path_length1(path, i):
+    """returns the weight of the path from the source to the neighbor from the right"""
+    path_to_point = path[:i]
+    weight = 0
+    for j in range(len(path_to_point)-1):
+        weight += get_weight(path_to_point[j], path_to_point[j + 1])
+    return weight
+
+
+def path_length2(path, i):
+    """returns the weight of the path from the source to the neighbor from the left"""
+    path_to_point = path[i:]
+    path_to_point.append(path[0])
+    weight = 0
+    for j in range(len(path_to_point)-1):
+        weight += get_weight(path_to_point[j], path_to_point[j + 1])
+    return weight
+
+
+def calculate_path_mult_targets(G, source: Coordinate, targets: List[Coordinate], enemies: List[Enemy]):
+    targets_with_start = targets[::]
+    targets_with_start.append(source)
+    tsp = nx.approximation.traveling_salesman_problem
+    round_path = tsp(G, weight='weight', nodes=targets_with_start, cycle=True, method=None)
+
+    source_index = find_source_in_path(round_path, source)
+    # taking off the last coord so that it doesn't finish at the starting position:
+    round_path_without_double = round_path[:len(round_path) - 1]
+    round_path_deque = deque(round_path_without_double)
+    # rotating the list so that the source is in the beginning:
+    round_path_deque.rotate(len(round_path_without_double) - source_index)
+    round_path_ordered_deque = round_path_deque
+
+    # figuring out which branch should be removed
+    round_path_ordered = list(collections.deque(round_path_ordered_deque))
+    right_neighbor = get_neighbor_from_the_right(round_path_ordered, targets)
+    left_neighbor = get_neighbor_from_the_left(round_path_ordered, targets)
+
+    if path_length1(round_path_ordered, right_neighbor) > path_length2(round_path_ordered, left_neighbor):
+        without_extra = round_path_ordered[right_neighbor:]
+        without_extra_flipped = without_extra[::-1]
+        final_path = without_extra_flipped.insert(0, source)
+    else:
+        final_path = round_path_ordered[:left_neighbor + 1]
+
+    return final_path
+
+
 def calculate_path(source: Coordinate, targets: List[Coordinate], enemies: List[Enemy], allowed_detection: float = 0) \
         -> Tuple[List[Coordinate], nx.Graph]:
     """Calculates a path from source to target without any detection
@@ -73,10 +142,11 @@ def calculate_path(source: Coordinate, targets: List[Coordinate], enemies: List[
     :return: list of calculated path waypoints and the graph constructed
     """
     G = create_paths_graph(source, targets, enemies)
+    if len(targets) > 1:
+        return calculate_path_mult_targets(G, source, targets, enemies), G
+    else:
+        return nx.shortest_path(G, source, targets[0], "weight"), G
 
-    return nx.shortest_path(G, source, targets[0], "weight"), G
-    # return [source] + targets, nx.DiGraph()
-#
 
 def combine_graph(radar_graph: nx.Graph(), all_graph: nx.Graph()) -> nx.Graph():
     """combines radar graph to regular graph"""
