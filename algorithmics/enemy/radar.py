@@ -17,7 +17,7 @@ class Radar(Enemy):
         self.center = center
         self.radius = radius
         self.borders = []
-        self.spray_points = []
+        self.points = []
 
     def get_borders(self, k: int) -> List[Coordinate]:
         borders = []
@@ -48,7 +48,7 @@ class Radar(Enemy):
             y = r * math.sin(theta) + self.center.y
             points.append((Coordinate(x, y)))
 
-        self.spray_points = points
+        self.points = points
         return points
 
     def is_good_angle(self, point1: Coordinate, point2: Coordinate) -> bool:
