@@ -23,8 +23,8 @@ class BlackHole(Enemy):
 
         for i in range(1, 2*k, 2):
             deg = theta*i
-            x_value = round(self.center.x + c*math.cos(deg), 2)
-            y_value = round(self.center.y + c*math.sin(deg), 2)
+            x_value = self.center.x + c*math.cos(deg)
+            y_value = self.center.y + c*math.sin(deg)
             borders.append(Coordinate(x_value, y_value))
         return borders
 
