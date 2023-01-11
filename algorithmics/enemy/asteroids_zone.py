@@ -12,6 +12,7 @@ class AsteroidsZone(Enemy):
         :param boundary: list of coordinates representing the boundary of the asteroids zone
         """
         self.boundary = boundary
+        self.borders = self.boundary
 
     def get_borders(self, k=0) -> List[Coordinate]:
         return self.boundary

@@ -6,11 +6,11 @@ from algorithmics.enemy.asteroids_zone import AsteroidsZone
 from algorithmics.utils.coordinate import Coordinate
 
 
-def does_line_slice(coord1: Coordinate, coord2: Coordinate, enemy, num_of_sides: int) -> bool:
+def does_line_slice(coord1: Coordinate, coord2: Coordinate, enemy) -> bool:
     """checks if a line connecting between coord1 and coord2 slices through the shape
     returns True if it slices and False otherwise"""
 
-    shape_coords = enemy.get_borders(num_of_sides)
+    shape_coords = enemy.borders
     shape_coords_list = []
     for coord in shape_coords:
         shape_coords_list.append([coord.x, coord.y])
