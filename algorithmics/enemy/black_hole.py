@@ -1,6 +1,7 @@
 from algorithmics.enemy.enemy import Enemy
 from algorithmics.utils.coordinate import Coordinate
 import math
+from typing import List
 
 
 class BlackHole(Enemy):
@@ -14,14 +15,8 @@ class BlackHole(Enemy):
         self.center = center
         self.radius = radius
 
-    def get_borders(self, k: int):
-        # if k == 4:
-        #     return (Coordinate(self.center.x - self.radius, self.center.y - self.radius),
-        #             Coordinate(self.center.x + self.radius, self.center.y - self.radius),
-        #             Coordinate(self.center.x - self.radius, self.center.y + self.radius),
-        #             Coordinate(self.center.x + self.radius, self.center.y + self.radius))
+    def get_borders(self, k: int) -> List[Coordinate]:
 
-        # else:
         borders = []
         theta = math.pi/k
         c = self.radius/math.cos(theta)
