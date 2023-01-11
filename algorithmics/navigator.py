@@ -1,7 +1,7 @@
 from typing import List, Tuple
 
 import networkx as nx
-
+from helper import does_line_slice
 from algorithmics.enemy.asteroids_zone import AsteroidsZone
 from algorithmics.enemy.black_hole import BlackHole
 from algorithmics.enemy.enemy import Enemy
@@ -33,7 +33,7 @@ def create_paths_graph(source: Coordinate, targets: List[Coordinate], enemies: L
         for point2 in result_graph.nodes:
             if point1 != point2:
                 # checks if the path is legal and adds edge
-                if does_line_slice(point1, point2, enemies[0]) == False:
+                if not does_line_slice(point1, point2, enemies[0], 0):
                     result_graph.add_edge(point1, point2, weight=get_weight(point1, point2))
     return result_graph
 
@@ -54,3 +54,4 @@ def calculate_path(source: Coordinate, targets: List[Coordinate], enemies: List[
 
     return nx.bidirectional_shortest_path(G, source, targets[0])
     # return [source] + targets, nx.DiGraph()
+
