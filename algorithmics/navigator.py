@@ -21,4 +21,7 @@ def calculate_path(source: Coordinate, targets: List[Coordinate], enemies: List[
     :param allowed_detection: maximum allowed distance of radar detection
     :return: list of calculated path waypoints and the graph constructed
     """
-    return [source] + targets, nx.DiGraph()
+    G = create_paths_graph(source, targets, enemies)
+
+    return nx.bidirectional_shortest_path(G, source, targets[0])
+    # return [source] + targets, nx.DiGraph()
