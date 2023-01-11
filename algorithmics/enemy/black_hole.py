@@ -15,6 +15,7 @@ class BlackHole(Enemy):
         """
         self.center = center
         self.radius = radius
+        self.borders = []
 
     def get_borders(self, k: int) -> List[Coordinate]:
 
@@ -27,6 +28,8 @@ class BlackHole(Enemy):
             x_value = self.center.x + c*math.cos(deg)
             y_value = self.center.y + c*math.sin(deg)
             borders.append(Coordinate(x_value, y_value))
+
+        self.borders = borders
         return borders
 
     def point_in_black_hole(self, cord: Coordinate) -> bool:
