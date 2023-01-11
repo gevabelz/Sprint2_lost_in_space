@@ -29,6 +29,12 @@ class BlackHole(Enemy):
             borders.append(Coordinate(x_value, y_value))
         return borders
 
+    def point_in_black_hole(self, cord: Coordinate) -> bool:
+        circle = Point(self.center.x, self.center.y).buffer(self.radius)
+        point = Point(cord.x, cord.y)
+        return circle.contains(point)
+
+
 
 if __name__ == '__main__':
     a = Point(1, 1).buffer(5)
