@@ -51,6 +51,10 @@ def create_paths_graph(source: Coordinate, targets: List[Coordinate],
     for radar in radar_list:
         radar_points = radar.points + radar.borders
 
+        for point in result_graph.nodes:
+            if point not in radar_points:
+                radar_points.append(point)
+
         for point1 in radar_points:
             for point2 in radar_points:
                 if point1 != point2:
@@ -96,7 +100,9 @@ def calculate_path(source: Coordinate, targets: List[Coordinate],
     :param allowed_detection: maximum allowed distance of radar detection
     :return: list of calculated path waypoints and the graph constructed
     """
-    G = create_paths_graph(source, targets, enemies)
-
-    return nx.shortest_path(G, source, targets[0], "weight"), G
+    try:
+        G = create_paths_graph(source, targets, enemies)
+        return nx.shortest_path(G, source, targets[0], "weight"), G
+    except:
+        return [source] + targets, G
     # return [source] + targets, nx.DiGraph()
