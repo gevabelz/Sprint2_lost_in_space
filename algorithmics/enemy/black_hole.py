@@ -1,5 +1,6 @@
 from algorithmics.enemy.enemy import Enemy
 from algorithmics.utils.coordinate import Coordinate
+from shapely.geometry import Point, Polygon
 import math
 from typing import List
 
@@ -19,7 +20,7 @@ class BlackHole(Enemy):
 
         borders = []
         theta = math.pi/k
-        c = self.radius/math.cos(theta)
+        c = (self.radius/math.cos(theta)) + 0.05
 
         for i in range(1, 2*k, 2):
             deg = theta*i
@@ -28,6 +29,8 @@ class BlackHole(Enemy):
             borders.append(Coordinate(x_value, y_value))
         return borders
 
+
 if __name__ == '__main__':
-    bh = BlackHole(Coordinate(10,6), 5)
-    print(bh.get_borders(7))
+    a = Point(1, 1).buffer(5)
+    b = Polygon
+    print(a.intersection(b))
