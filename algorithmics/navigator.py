@@ -8,8 +8,13 @@ from algorithmics.enemy.enemy import Enemy
 from algorithmics.enemy.radar import Radar
 from algorithmics.utils.coordinate import Coordinate
 
-# get_borders()
+
+def get_weight(point1: Coordinate, point2):
+    return point1.distance_to_squared(point2)
+
+
 # Navigator
+
 def create_paths_graph(source: Coordinate, targets: List[Coordinate], enemies: List[Enemy]) -> nx.Graph():
     result_graph = nx.Graph()
     result_graph.add_node(source)
@@ -19,19 +24,19 @@ def create_paths_graph(source: Coordinate, targets: List[Coordinate], enemies: L
         if type(enemy) == Radar:
             pass
             # to be added
-        if type(enemy) == AsteroidsZone:
-            result_graph.add_nodes_from(enemy.boundary)
-        if type(enemy) == BlackHole:
-            result_graph.add_nodes_from(enemy.get_borders(4))
+        # enemy is astroid or black hole
+        else:
+            result_graph.add_nodes_from(enemy.get_borders())
 
     # creates edges:
     for point1 in result_graph.nodes:
         for point2 in result_graph.nodes:
             if point1 != point2:
                 # checks if the path is legal and adds edge
-                if does_line_slice(point1, point2, enemy[0]) == False:
-                    result_graph.add_edge(point1, point2, get_weight(point1, point2))
+                if does_line_slice(point1, point2, enemies[0]) == False:
+                    result_graph.add_edge(point1, point2, weight=get_weight(point1, point2))
     return result_graph
+
 
 def calculate_path(source: Coordinate, targets: List[Coordinate], enemies: List[Enemy], allowed_detection: float = 0) \
         -> Tuple[List[Coordinate], nx.Graph]:
