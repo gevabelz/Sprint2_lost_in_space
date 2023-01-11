@@ -1,6 +1,7 @@
 from typing import List, Tuple
 
 import networkx as nx
+import matplotlib.pyplot as plt
 
 from algorithmics.enemy.asteroids_zone import AsteroidsZone
 from algorithmics.enemy.black_hole import BlackHole
@@ -75,9 +76,18 @@ def calculate_path(source: Coordinate, targets: List[Coordinate], enemies: List[
 
     return nx.shortest_path(G, source, targets[0], "weight"), G
     # return [source] + targets, nx.DiGraph()
+#
+
+def combine_graph(radar_graph: nx.Graph(), all_graph: nx.Graph()) -> nx.Graph():
+    """combines radar graph to regular graph"""
+    R = nx.compose(radar_graph, all_graph)
+    return R
 
 
-if __name__ == '__main__':
-    b1 = BlackHole(Coordinate(1,1), 4)
-    b2 = BlackHole(Coordinate(11,1), 6)
-    print(get_hashaka_points([b1, b2]))
+
+
+
+
+
+
+
