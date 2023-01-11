@@ -30,7 +30,7 @@ def create_paths_graph(source: Coordinate, targets: List[Coordinate],
     for enemy in enemies:
         if type(enemy) == Radar:
             radar_list.append(enemy)
-            enemy.points(POINTS_PER_UNIT_AREA)
+            enemy.spray_points(POINTS_PER_UNIT_AREA)
 
         result_graph.add_nodes_from(enemy.get_borders(SIDES_OF_BLACK_HOLE))
 
