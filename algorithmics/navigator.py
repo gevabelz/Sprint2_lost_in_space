@@ -20,7 +20,7 @@ def get_weight(point1: Coordinate, point2):
 # Navigator
 
 def create_paths_graph(source: Coordinate, targets: List[Coordinate],
-                       enemies: List[Enemy]) -> nx.Graph():
+                       enemies: List[Enemy], allowed: float, illegal) -> nx.Graph():
     result_graph = nx.Graph()
     result_graph.add_node(source)
 
@@ -69,7 +69,7 @@ def create_paths_graph(source: Coordinate, targets: List[Coordinate],
                                     if not radar.is_good_angle(point1, point2):
                                         legal = False
                                         break
-                        if legal:
+                        if legal or dist_between_points < allowed:
                             if point1 not in result_graph.nodes:
                                 result_graph.add_nodes_from([point1])
 
@@ -78,9 +78,18 @@ def create_paths_graph(source: Coordinate, targets: List[Coordinate],
 
                             result_graph.add_edge(point1, point2,
                                                   weight=dist_between_points)
-
+                            if not legal:
+                                illegal[(point1, point2)] = dist_between_points
 
     return result_graph
+
+
+def calc_covered(path, illegal):
+    covered = 0
+    for i in range(len(path)-1):
+        if (path[i], path[i+1]) in illegal:
+            covered += illegal[path[i], path[i+1]]
+    return covered
 
 
 def calculate_path(source: Coordinate, targets: List[Coordinate],
@@ -96,7 +105,11 @@ def calculate_path(source: Coordinate, targets: List[Coordinate],
     :param allowed_detection: maximum allowed distance of radar detection
     :return: list of calculated path waypoints and the graph constructed
     """
-    G = create_paths_graph(source, targets, enemies)
+    ill_edges = {}
+    G = create_paths_graph(source, targets, enemies, allowed_detection, ill_edges)
 
-    return nx.shortest_path(G, source, targets[0], "weight"), G
+    p = nx.shortest_path(G, source, targets[0], "weight"), G
+    while calc_covered(p, ill_edges) >= allowed_detection:
+
+    return
     # return [source] + targets, nx.DiGraph()
