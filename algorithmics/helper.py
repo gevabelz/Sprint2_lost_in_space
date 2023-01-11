@@ -2,29 +2,28 @@ import shapely
 from shapely import geometry
 from shapely.geometry import Polygon, Point, LinearRing, LineString
 from algorithmics.enemy.black_hole import BlackHole
-EMPTY = "EMPTY"
+from algorithmics.enemy.asteroids_zone import AsteroidsZone
+from algorithmics.utils.coordinate import Coordinate
 
 
-polygon = Polygon([[0, 0], [1, 0], [1, 1], [0, 1]])
-
-ring = LinearRing([(0, 0), (1, 0), (1, 1), (0, 1)])
-line = LineString([(1,1), (2,3)])
-a = polygon.intersection(line)
-
-
-
-def does_line_slice(coord1, coord2, enemy, num_of_sides):
-    # change shape into enemy
+def does_line_slice(coord1: Coordinate, coord2: Coordinate, enemy, num_of_sides: int) -> bool:
     """checks if a line connecting between coord1 and coord2 slices through the shape
     returns True if it slices and False otherwise"""
+
     shape_coords = enemy.get_borders(num_of_sides)
     shape_coords_list = []
     for coord in shape_coords:
         shape_coords_list.append([coord.x, coord.y])
+
     shape = Polygon(shape_coords_list)
     ring = shape.exterior
-    path = LineString([coord1, coord2])
+
+    point1 = coord1.x, coord1.y
+    point2 = coord2.x, coord2.y
+    path = LineString([point1, point2])  # the line connecting the coords
+
     intersection = shape.intersection(path)
+
     if intersection.is_empty:
         return False
     if ring.contains(intersection):
