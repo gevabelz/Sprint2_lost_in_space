@@ -1,8 +1,10 @@
-from Sprint2_lost_in_space.algorithmics.enemy.enemy import Enemy
-from Sprint2_lost_in_space.algorithmics.utils.coordinate import Coordinate
+from algorithmics.enemy.enemy import Enemy
+from algorithmics.utils.coordinate import Coordinate
+from shapely.geometry import Point, Polygon
 import math
 from typing import List
-from shapely.geometry import Point
+
+
 class BlackHole(Enemy):
 
     def __init__(self, center: Coordinate, radius: float):
@@ -18,7 +20,7 @@ class BlackHole(Enemy):
 
         borders = []
         theta = math.pi/k
-        c = self.radius/math.cos(theta)
+        c = (self.radius/math.cos(theta)) + 0.05
 
         for i in range(1, 2*k, 2):
             deg = theta*i
@@ -27,14 +29,8 @@ class BlackHole(Enemy):
             borders.append(Coordinate(x_value, y_value))
         return borders
 
-    def point_in_black_hole(self, cord: Coordinate) -> bool:
-        circle = Point(self.center.x, self.center.y).buffer(self.radius)
-        point = Point(cord.x, cord.y)
-        return circle.contains(point)
-
 
 if __name__ == '__main__':
-    bh = BlackHole(Coordinate(10,6), 5)
-    c = Coordinate(14.999, 6)
-    print(bh.point_in_black_hole(c))
-
+    a = Point(1, 1).buffer(5)
+    b = Polygon
+    print(a.intersection(b))

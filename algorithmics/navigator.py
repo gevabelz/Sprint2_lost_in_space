@@ -15,6 +15,19 @@ def get_weight(point1: Coordinate, point2):
 
 
 # Navigator
+def get_hashaka_points(black_holes: List[BlackHole]) -> List[Coordinate]:
+    hasaka_points: List[Coordinate] = []
+    for j in range(len(black_holes)):
+        for i in range(j+1, len(black_holes)):
+            if (black_holes[i].radius + black_holes[j].radius) == black_holes[i].center.distance_to(black_holes[j].center):
+                hole1 = black_holes[i]
+                hole2 = black_holes[j]
+                hasaka_points.append(
+                    Coordinate((hole1.radius*hole2.center.x + hole2.radius*hole1.center.x)/(hole1.radius + hole2.radius),
+                               (hole1.radius*hole2.center.y + hole2.radius*hole1.center.y)/(hole1.radius + hole2.radius)))
+
+    return hasaka_points
+
 
 def create_paths_graph(source: Coordinate, targets: List[Coordinate], enemies: List[Enemy]) -> nx.Graph():
     result_graph = nx.Graph()
@@ -29,6 +42,7 @@ def create_paths_graph(source: Coordinate, targets: List[Coordinate], enemies: L
         # enemy is astroid or black hole
         else:
             result_graph.add_nodes_from(enemy.get_borders(hole_sides))
+
 
     # creates edges:
     for point1 in result_graph.nodes:
@@ -61,3 +75,9 @@ def calculate_path(source: Coordinate, targets: List[Coordinate], enemies: List[
 
     return nx.shortest_path(G, source, targets[0], "weight"), G
     # return [source] + targets, nx.DiGraph()
+
+
+if __name__ == '__main__':
+    b1 = BlackHole(Coordinate(1,1), 4)
+    b2 = BlackHole(Coordinate(11,1), 6)
+    print(get_hashaka_points([b1, b2]))
