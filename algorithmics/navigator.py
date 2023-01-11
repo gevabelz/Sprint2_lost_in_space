@@ -92,6 +92,19 @@ def calc_covered(path, illegal):
     return covered
 
 
+def remove_min(graph, path, illegal):
+    min_edge = None
+    min_covered = 10000
+    for i in range(len(path)-1):
+        if (path[i], path[i+1]) in illegal:
+            if illegal[path[i], path[i+1]] < min_covered:
+                min_edge = (path[i], path[i+1])
+                min_covered = illegal[path[i], path[i+1]]
+
+    if min_edge:
+        graph.remove_edge(min_edge[0], min_edge[1])
+
+
 def calculate_path(source: Coordinate, targets: List[Coordinate],
                    enemies: List[Enemy], allowed_detection: float = 0) \
         -> Tuple[List[Coordinate], nx.Graph]:
@@ -110,6 +123,6 @@ def calculate_path(source: Coordinate, targets: List[Coordinate],
 
     p = nx.shortest_path(G, source, targets[0], "weight"), G
     while calc_covered(p, ill_edges) >= allowed_detection:
-
-    return
+        p = nx.shortest_path(G, source, targets[0], "weight"), G
+    return p
     # return [source] + targets, nx.DiGraph()
